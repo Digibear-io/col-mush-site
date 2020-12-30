@@ -1,0 +1,21 @@
+.container {
+  cursor: pointer;
+  padding: 8px;
+  width: 48%;
+  margin-top: 24px;
+  text-align: center;
+}
+
+.container a,
+.container a:hover,
+.container a:active,
+.container a:visited {
+  color: white;
+}
+
+@media screen and (max-width: 1024px) {
+  .container {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+}
