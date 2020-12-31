@@ -15,6 +15,8 @@ const charState = {
   name: "",
   look: "",
   demeanor: "",
+  saved: false,
+  archetype: 0,
   blood: 0,
   heart: 0,
   mind: 0,
@@ -24,6 +26,7 @@ const charState = {
   power: 0,
   wild: 0,
   gear: [],
+  questions: [],
   moves: [],
 };
 
@@ -32,27 +35,41 @@ const charSlice = createSlice({
   name: "chargen",
   initialState: charState,
   reducers: {
-    name: (state, action) => ({
-      ...state,
-      ...{ name: action.payload },
-    }),
-    look: (state, action) => ({
-      ...state,
-      ...{ look: action.payload },
-    }),
-    demeanor: (state, action) => ({
-      ...state,
-      ...{ demeanor: action.payload },
-    }),
-
-    set: (state, action) => ({
-      ...state,
-      ...{
-        [action.payload.key]: action.payload.value,
-      },
-    }),
+    name: (state, action) => {
+      const newState = {
+        ...state,
+        ...{ name: action.payload },
+      };
+      return newState;
+    },
+    look: (state, action) => {
+      const newState = {
+        ...state,
+        ...{ look: action.payload },
+      };
+      return newState;
+    },
+    demeanor: (state, action) => {
+      const newState = {
+        ...state,
+        ...{ demeanor: action.payload },
+      };
+      return newState;
+    },
+    set: (state, action) => {
+      const newState = {
+        ...state,
+        ...{
+          [action.payload.key]: action.payload.value,
+        },
+      };
+      return newState;
+    },
+    load: (state, action) => {
+      return action.payload;
+    },
   },
 });
 
-export const { name, look, demeanor, raise, lower, set } = charSlice.actions;
+export const { name, look, demeanor, load, set } = charSlice.actions;
 export const charStore = configureStore({ reducer: charSlice.reducer });

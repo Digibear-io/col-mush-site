@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { charStore, set } from "../../store";
 
 import styles from "./Fields.module.css";
 
 export default function Fields({ label, note, faction, archetype }) {
   const [stats, setStats] = useState([]);
+  const [state, setState] = useState(charStore.getState());
   const [name, setName] = useState("");
 
   useEffect(() => {
@@ -16,6 +18,7 @@ export default function Fields({ label, note, faction, archetype }) {
         setStats(["blood", "heart", "mind", "spirit"]);
         setName("stats");
     }
+    charStore.subscribe(() => setState(charStore.getState()));
   }, []);
 
   const handleRadio = (stat) => {
@@ -23,8 +26,12 @@ export default function Fields({ label, note, faction, archetype }) {
 
     // Reset all of the stats
     radios.forEach((radio) => {
+      charStore.dispatch(
+        set({ key: radio.value, value: archetype[radio.value] })
+      );
       document.getElementById(radio.value).innerText = archetype[radio.value];
     });
+    charStore.dispatch(set({ key: stat, value: archetype[stat] + 1 }));
     document.getElementById(stat).innerText = archetype[stat] + 1;
   };
 
@@ -44,10 +51,11 @@ export default function Fields({ label, note, faction, archetype }) {
                   type="radio"
                   name={name}
                   value={stat}
+                  checked={state[stat] > archetype[stat] ? true : false}
                   onChange={() => handleRadio(stat)}
                 />
                 <div className={styles.value} id={stat}>
-                  {archetype[stat]}
+                  {state[stat]}
                 </div>
               </div>
             </li>

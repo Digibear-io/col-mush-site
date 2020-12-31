@@ -1,5 +1,13 @@
 import { useEffect, useState, useRef } from "react";
-import { menuStore, charStore, name, look, demeanor, stats } from "../../store";
+import {
+  menuStore,
+  charStore,
+  name,
+  look,
+  demeanor,
+  set,
+  load,
+} from "../../store";
 import styles from "./Chargen.module.css";
 import Fields from "../../components/Fields/Fields";
 import Button from "../../components/Button/Button";
@@ -9,6 +17,7 @@ function rand(min, max) {
 }
 
 export default function Chargen({ data }) {
+  const [state, setState] = useState();
   const [tog, setTog] = useState(menuStore.getState());
   const [faction, setFaction] = useState(0);
   const [nam, setName] = useState("");
@@ -53,20 +62,27 @@ export default function Chargen({ data }) {
     randTop(data[faction].archetypes[idx]);
     const radios = document.querySelectorAll("input[type=radio]");
     radios.forEach((radio) => {
-      const target = (document.getElementById(radio.value).innerText =
-        archetype[radio.value]);
+      document.getElementById(radio.value).innerText = archetype[radio.value];
       radio.checked = false;
     });
   };
 
-  menuStore.subscribe(() => setTog(menuStore.getState()));
-  charStore.subscribe(() => {
-    setDem(charStore.getState().demeanor);
-    setLook(charStore.getState().look);
-    setName(charStore.getState().name);
-  });
+  const handleContinue = () => {
+    window.localStorage.setItem("state", JSON.stringify(state));
+  };
 
-  useEffect(() => handleFaction(0), []);
+  useEffect(() => {
+    const storage = JSON.parse(window.localStorage.getItem("state"));
+    if (storage) charStore.dispatch(load(storage));
+    menuStore.subscribe(() => setTog(menuStore.getState()));
+    charStore.subscribe(() => {
+      setDem(charStore.getState().demeanor);
+      setLook(charStore.getState().look);
+      setName(charStore.getState().name);
+      setState(charStore.getState());
+    });
+    handleFaction(0);
+  }, []);
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
@@ -162,7 +178,7 @@ export default function Chargen({ data }) {
               archetype={archetype}
             />
           </div>
-          <Button>Continue</Button>
+          <Button onClick={() => handleContinue()}>Continue</Button>
         </div>
         <div
           className={styles.right}
