@@ -170,6 +170,9 @@ export default function Chargen({ data }) {
               </div>
             ))}
           </div>
+          <div className={styles.factionBody}>
+            <p>{data[faction]?.Description}</p>
+          </div>
         </div>
         <div className={styles.center}>
           <select
@@ -189,11 +192,12 @@ export default function Chargen({ data }) {
           <h1 className={styles.title}>{archetype?.Name}</h1>
           <select
             className={styles.mobileTitle}
+            value={ar}
             onChange={(e) => handleArchetype(e.target.value)}
           >
             {data[faction].archetypes.map((archetype, idx) => {
               return (
-                <option key={archetype._id} value={idx} selected={idx === ar}>
+                <option key={archetype._id} value={idx}>
                   {archetype.Name}
                 </option>
               );
@@ -205,6 +209,7 @@ export default function Chargen({ data }) {
             style={{ backgroundImage: `url(${bg})` }}
           />
           <p className={styles.intro}>{archetype?.Body}</p>
+          <p className={styles.factionMobile}>{data[faction]?.Description}</p>
           <div className={styles.inputHolder}>
             <div className={styles.inputContainer}>
               <p className={styles.label}>Name:</p>

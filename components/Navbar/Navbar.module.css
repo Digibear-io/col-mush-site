@@ -4,6 +4,7 @@
   flex-direction: column;
   position: fixed;
   z-index: 10;
+  pointer-events: none;
 }
 
 .inner {
@@ -43,6 +44,7 @@
 }
 
 .menuAction {
+  pointer-events: auto;
   cursor: pointer;
 }
 
@@ -51,6 +53,7 @@
   list-style: none;
   font-weight: lighter;
   text-align: right;
+  pointer-events: auto;
 }
 
 @media screen and (max-width: 1024px) {

@@ -14,3 +14,9 @@
   font-family: "Roboto Mono", monospace;
   font-weight: lighter;
 }
+
+@media screen and (max-width: 1200px) {
+  .container {
+    margin-bottom: 0px;
+  }
+}
