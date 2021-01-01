@@ -1,4 +1,3 @@
-import { arch } from "os";
 import { useEffect, useState } from "react";
 import { charStore, set } from "../../store";
 

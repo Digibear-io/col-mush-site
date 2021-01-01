@@ -3,6 +3,8 @@ import { menuStore, charStore, load, set } from "../../store";
 import styles from "./Chargen.module.css";
 import Fields from "../../components/Fields/Fields";
 import Button from "../../components/Button/Button";
+import InputField from "../../components/InputField";
+import { useRouter } from "next/router";
 
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -21,13 +23,13 @@ export default function Chargen({ data }) {
       charStore.getState().archetype || 0
     ]
   );
-
   const [bg, setBg] = useState(
     data[charStore.getState().faction || 0].archetypes[
       charStore.getState().archetype || 0
     ]?.image?.url
   );
   const selectRef = useRef();
+  const router = useRouter();
 
   const randTop = (archetype) => {
     const names = archetype.Names;
@@ -56,7 +58,7 @@ export default function Chargen({ data }) {
     charStore.dispatch(set({ key: "look", value: lk }));
 
     // If this is the first time (no saves) show base stats too!
-    if (!state.saved) {
+    if (!state.changed) {
       [
         "heart",
         "blood",
@@ -72,9 +74,9 @@ export default function Chargen({ data }) {
     }
   };
 
-  const handleFaction = (idx) => {
+  const handleFaction = (idx, ste = {}) => {
     // If this isn't the saved faction, then randomize things.
-    if (idx !== faction) {
+    if (!ste.changed) {
       charStore.dispatch(set({ key: "faction", value: idx }));
       setArchetype(data[idx].archetypes[0]);
       setBg(data[idx].archetypes[0]?.image?.url);
@@ -83,6 +85,7 @@ export default function Chargen({ data }) {
   };
 
   const handleArchetype = (idx) => {
+    console.log(idx);
     // if it's a new archetype, remove the highlighting and reset the stats!
     if (idx !== ar) {
       setArchetype(data[faction].archetypes[idx]);
@@ -106,8 +109,8 @@ export default function Chargen({ data }) {
   };
 
   const handleContinue = () => {
-    charStore.dispatch(set({ key: "saved", value: true }));
     window.localStorage.setItem("state", JSON.stringify(state));
+    router.push("/chargen/questions");
   };
 
   useEffect(() => {
@@ -131,10 +134,12 @@ export default function Chargen({ data }) {
       );
     });
 
-    if (storage && storage.saved) {
+    if (storage) {
+      setState(storage);
       charStore.dispatch(load(storage));
     }
-    handleFaction(faction);
+
+    handleFaction(faction || 0, storage || {});
 
     menuStore.subscribe(() => setTog(menuStore.getState()));
   }, []);
@@ -146,7 +151,7 @@ export default function Chargen({ data }) {
           <select
             ref={selectRef}
             id={styles.standardSelect}
-            onChange={(e) => handleFaction(e.target.value)}
+            onChange={(e) => handleFaction(e.target.value, state)}
           >
             {data.map((faction, idx) => {
               if (faction.archetypes.length > 0) {
@@ -211,18 +216,9 @@ export default function Chargen({ data }) {
           <p className={styles.intro}>{archetype?.Body}</p>
           <p className={styles.factionMobile}>{data[faction]?.Description}</p>
           <div className={styles.inputHolder}>
-            <div className={styles.inputContainer}>
-              <p className={styles.label}>Name:</p>
-              <div className={styles.input} placeholder={nam} contentEditable />
-            </div>
-            <div className={styles.inputContainer}>
-              <p className={styles.label}>Look:</p>
-              <div className={styles.input} placeholder={lk} contentEditable />
-            </div>
-            <div className={styles.inputContainer}>
-              <p className={styles.label}>Demeanor:</p>
-              <div className={styles.input} placeholder={dem} contentEditable />
-            </div>
+            <InputField label="Name" placeholder={state.name || nam} />
+            <InputField label="Look" placeholder={state.look || lk} />
+            <InputField label="Demeanor" placeholder={state.demeanor || dem} />
           </div>
           <Button
             outline

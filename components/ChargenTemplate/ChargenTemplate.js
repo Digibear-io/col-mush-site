@@ -1,3 +1,5 @@
+import styles from "./ChargenTemplate.module.css";
+
 export default function ChargenTemplate({ left, right, children }) {
   return (
     <div className={styles.wrapper}>
