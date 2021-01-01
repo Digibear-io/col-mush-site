@@ -117,6 +117,10 @@
   font-family: "Roboto Mono", monospace;
 }
 
+.inputHolder {
+  margin-bottom: 24px;
+}
+
 .input {
   flex-grow: 1;
   font-weight: lighter;
@@ -156,11 +160,16 @@
   justify-content: space-between;
 }
 
+.buttonContainer {
+  display: flex;
+  margin-top: 16px;
+  justify-content: space-between;
+}
+
 .button {
   background-color: #1a1a1a;
   padding: 8px;
   width: 48%;
-  margin-top: 24px;
   text-align: center;
   border: #373737 1px solid;
 }
@@ -189,6 +198,7 @@
   .center {
     font-size: 1.2em;
     width: 100%;
+    padding-right: 8px;
   }
 
   .mobileImage {
@@ -211,14 +221,15 @@
   .statsContainer {
     flex-direction: column;
   }
+
+  .buttonContainer {
+    flex-direction: column;
+  }
+
   .archImage,
   .bar,
   .bottomTitle {
     display: none;
-  }
-
-  .button {
-    margin-bottom: 24px;
   }
 }
 
@@ -233,10 +244,6 @@
 
   .mobileTitle {
     display: block;
-  }
-
-  .center {
-    padding-right: 16px;
   }
 
   .mobileSelect {

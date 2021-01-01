@@ -1,13 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import {
-  menuStore,
-  charStore,
-  name,
-  look,
-  demeanor,
-  set,
-  load,
-} from "../../store";
+import { menuStore, charStore, load, set } from "../../store";
 import styles from "./Chargen.module.css";
 import Fields from "../../components/Fields/Fields";
 import Button from "../../components/Button/Button";
@@ -17,14 +9,24 @@ function rand(min, max) {
 }
 
 export default function Chargen({ data }) {
-  const [state, setState] = useState();
+  const [state, setState] = useState(charStore.getState());
   const [tog, setTog] = useState(menuStore.getState());
-  const [faction, setFaction] = useState(0);
-  const [nam, setName] = useState("");
-  const [lk, setLook] = useState("");
-  const [dem, setDem] = useState("");
-  const [archetype, setArchetype] = useState({});
-  const [bg, setBg] = useState("");
+  const [faction, setFaction] = useState(charStore.getState().faction || 0);
+  const [nam, setName] = useState(charStore.getState().name || "");
+  const [lk, setLook] = useState(charStore.getState().name || "");
+  const [ar, setAr] = useState(charStore.getState().archetype);
+  const [dem, setDem] = useState(charStore.getState().name || "");
+  const [archetype, setArchetype] = useState(
+    data[charStore.getState().faction || 0].archetypes[
+      charStore.getState().archetype || 0
+    ]
+  );
+
+  const [bg, setBg] = useState(
+    data[charStore.getState().faction || 0].archetypes[
+      charStore.getState().archetype || 0
+    ]?.image?.url
+  );
   const selectRef = useRef();
 
   const randTop = (archetype) => {
@@ -42,47 +44,101 @@ export default function Chargen({ data }) {
       ][rand(0, 5)]
     }, ${clothes}.`;
 
-    charStore.dispatch(name(names[rand(0, names.length - 1)].text));
     charStore.dispatch(
-      demeanor(archetype.demeanor[rand(0, archetype.demeanor.length - 1)].text)
+      set({ key: "name", value: names[rand(0, names.length - 1)].text })
     );
-    charStore.dispatch(look(lk));
+    charStore.dispatch(
+      set({
+        key: "demeanor",
+        value: archetype.demeanor[rand(0, archetype.demeanor.length - 1)].text,
+      })
+    );
+    charStore.dispatch(set({ key: "look", value: lk }));
+
+    // If this is the first time (no saves) show base stats too!
+    if (!state.saved) {
+      [
+        "heart",
+        "blood",
+        "mind",
+        "spirit",
+        "mortality",
+        "night",
+        "power",
+        "wild",
+      ].forEach((stat) => {
+        charStore.dispatch(set({ key: stat, value: archetype[stat] }));
+      });
+    }
   };
 
   const handleFaction = (idx) => {
-    setFaction(idx);
-    setArchetype(data[idx].archetypes[0]);
-    setBg(data[idx].archetypes[0]?.image?.url);
-    randTop(data[idx].archetypes[0]);
+    // If this isn't the saved faction, then randomize things.
+    if (idx !== faction) {
+      charStore.dispatch(set({ key: "faction", value: idx }));
+      setArchetype(data[idx].archetypes[0]);
+      setBg(data[idx].archetypes[0]?.image?.url);
+      randTop(data[idx].archetypes[0]);
+    }
   };
 
   const handleArchetype = (idx) => {
-    setArchetype(data[faction].archetypes[idx]);
-    setBg(data[faction].archetypes[idx]?.image?.url);
-    randTop(data[faction].archetypes[idx]);
-    const radios = document.querySelectorAll("input[type=radio]");
-    radios.forEach((radio) => {
-      document.getElementById(radio.value).innerText = archetype[radio.value];
-      radio.checked = false;
-    });
+    // if it's a new archetype, remove the highlighting and reset the stats!
+    if (idx !== ar) {
+      setArchetype(data[faction].archetypes[idx]);
+      charStore.dispatch(set({ key: "archetype", value: idx }));
+      setBg(data[faction].archetypes[idx]?.image?.url);
+      randTop(data[faction].archetypes[idx]);
+      charStore.dispatch(set({ key: "archetype", value: idx }));
+      document.querySelectorAll("input[type=radio]").forEach((radio) => {
+        charStore.dispatch(
+          set({
+            key: radio.value,
+            value: data[faction].archetypes[idx][radio.value],
+          })
+        );
+
+        // Reset the state stat values
+        document.getElementById(radio.value).innerText =
+          data[faction].archetypes[idx][radio.value];
+      });
+    }
   };
 
   const handleContinue = () => {
+    charStore.dispatch(set({ key: "saved", value: true }));
     window.localStorage.setItem("state", JSON.stringify(state));
   };
 
   useEffect(() => {
     const storage = JSON.parse(window.localStorage.getItem("state"));
-    if (storage) charStore.dispatch(load(storage));
-    menuStore.subscribe(() => setTog(menuStore.getState()));
     charStore.subscribe(() => {
       setDem(charStore.getState().demeanor);
       setLook(charStore.getState().look);
       setName(charStore.getState().name);
       setState(charStore.getState());
+      setFaction(charStore.getState().faction);
+      setAr(charStore.getState().archetype);
+      setArchetype(
+        data[charStore.getState().faction || 0].archetypes[
+          charStore.getState().archetype || 0
+        ]
+      );
+      setBg(
+        data[charStore.getState().faction || 0].archetypes[
+          charStore.getState().archetype || 0
+        ]?.image?.url
+      );
     });
-    handleFaction(0);
+
+    if (storage && storage.saved) {
+      charStore.dispatch(load(storage));
+    }
+    handleFaction(faction);
+
+    menuStore.subscribe(() => setTog(menuStore.getState()));
   }, []);
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
@@ -137,30 +193,37 @@ export default function Chargen({ data }) {
           >
             {data[faction].archetypes.map((archetype, idx) => {
               return (
-                <option key={archetype._id} value={idx}>
+                <option key={archetype._id} value={idx} selected={idx === ar}>
                   {archetype.Name}
                 </option>
               );
             })}
           </select>
+
           <div
             className={styles.mobileImage}
             style={{ backgroundImage: `url(${bg})` }}
           />
           <p className={styles.intro}>{archetype?.Body}</p>
-          <div className={styles.inputContainer}>
-            <p className={styles.label}>Name:</p>
-            <div className={styles.input} placeholder={nam} contentEditable />
+          <div className={styles.inputHolder}>
+            <div className={styles.inputContainer}>
+              <p className={styles.label}>Name:</p>
+              <div className={styles.input} placeholder={nam} contentEditable />
+            </div>
+            <div className={styles.inputContainer}>
+              <p className={styles.label}>Look:</p>
+              <div className={styles.input} placeholder={lk} contentEditable />
+            </div>
+            <div className={styles.inputContainer}>
+              <p className={styles.label}>Demeanor:</p>
+              <div className={styles.input} placeholder={dem} contentEditable />
+            </div>
           </div>
-          <div className={styles.inputContainer}>
-            <p className={styles.label}>Look:</p>
-            <div className={styles.input} placeholder={lk} contentEditable />
-          </div>
-          <div className={styles.inputContainer}>
-            <p className={styles.label}>Demeanor:</p>
-            <div className={styles.input} placeholder={dem} contentEditable />
-          </div>
-          <Button outline onClick={() => randTop(archetype)}>
+          <Button
+            outline
+            onClick={() => randTop(archetype)}
+            style={{ marginTop: "16px" }}
+          >
             Randomize
           </Button>
           <div className={styles.statsContainer}>
@@ -178,7 +241,10 @@ export default function Chargen({ data }) {
               archetype={archetype}
             />
           </div>
-          <Button onClick={() => handleContinue()}>Continue</Button>
+          <div className={styles.buttonContainer}>
+            <Button onClick={() => handleContinue()}>Continue</Button>
+            <Button outline>Restart</Button>
+          </div>
         </div>
         <div
           className={styles.right}

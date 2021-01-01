@@ -1,3 +1,4 @@
+import { arch } from "os";
 import { useEffect, useState } from "react";
 import { charStore, set } from "../../store";
 
@@ -9,30 +10,42 @@ export default function Fields({ label, note, faction, archetype }) {
   const [name, setName] = useState("");
 
   useEffect(() => {
+    charStore.subscribe(() => setState(charStore.getState()));
     switch (true) {
       case faction:
         setStats(["mortality", "night", "power", "wild"]);
+        handleRadio();
         setName("faction");
         break;
       default:
         setStats(["blood", "heart", "mind", "spirit"]);
+        handleRadio();
         setName("stats");
     }
-    charStore.subscribe(() => setState(charStore.getState()));
   }, []);
 
-  const handleRadio = (stat) => {
-    const radios = document.getElementsByName(name);
-
-    // Reset all of the stats
-    radios.forEach((radio) => {
+  const handleRadio = (stat = "") => {
+    // Reset the radio buttons.
+    document.getElementsByName(name).forEach((radio) => {
       charStore.dispatch(
         set({ key: radio.value, value: archetype[radio.value] })
       );
+      radio.checked = false;
       document.getElementById(radio.value).innerText = archetype[radio.value];
     });
-    charStore.dispatch(set({ key: stat, value: archetype[stat] + 1 }));
-    document.getElementById(stat).innerText = archetype[stat] + 1;
+
+    // If the stat has been given, set it.
+    if (stat) {
+      charStore.dispatch(set({ key: stat, value: archetype[stat] + 1 }));
+      document.getElementById(stat).innerText = archetype[stat] + 1;
+
+      // Check the stat's radio button for style!
+      document.getElementsByName(name).forEach((radio) => {
+        if (radio.value === stat) {
+          radio.checked = true;
+        }
+      });
+    }
   };
 
   return (
@@ -48,10 +61,10 @@ export default function Fields({ label, note, faction, archetype }) {
               <div className={styles.row}>
                 <p>{stat}</p>
                 <input
+                  checked={state[stat] > archetype[stat]}
                   type="radio"
                   name={name}
                   value={stat}
-                  checked={state[stat] > archetype[stat] ? true : false}
                   onChange={() => handleRadio(stat)}
                 />
                 <div className={styles.value} id={stat}>
