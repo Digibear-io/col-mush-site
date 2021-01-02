@@ -168,6 +168,18 @@
   font-family: "Roboto Mono", monospace;
 }
 
+.qHeaderMobile {
+  display: none;
+  font-family: "Roboto Mono", monospace;
+  font-weight: lighter;
+  margin-top: 16px;
+}
+
+.qHeaderMobile h3 {
+  font-weight: normal;
+  margin-bottom: 4px;
+}
+
 @media screen and (max-width: 1111px) {
   .archetypes {
     flex-direction: column;
@@ -258,5 +270,9 @@
     letter-spacing: normal;
     text-transform: capitalize;
     border-bottom: 1px solid white;
+  }
+
+  .qHeaderMobile {
+    display: block;
   }
 }

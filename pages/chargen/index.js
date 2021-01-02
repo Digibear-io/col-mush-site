@@ -130,7 +130,7 @@ export default function Chargen({ data }) {
       setBg(
         data[charStore.getState().faction || 0].archetypes[
           charStore.getState().archetype || 0
-        ]?.image?.url
+        ]?.image[0]?.url
       );
     });
 
@@ -168,7 +168,7 @@ export default function Chargen({ data }) {
               <div className={styles.avatarContainer} key={archetype?._id}>
                 <img
                   className={styles.avatarLarge}
-                  src={archetype?.image.url}
+                  src={archetype?.image[0].url}
                   onClick={() => handleArchetype(idx)}
                 />
                 <p className={styles.caption}>{archetype?.Name}</p>

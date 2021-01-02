@@ -1,0 +1,44 @@
+.archImage {
+  width: 25%;
+  height: 100vh;
+  position: fixed;
+  right: 0;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  background-size: cover;
+  background-position: center;
+}
+
+.bottomTitle {
+  margin-top: auto;
+  background-color: black;
+  text-align: right;
+  width: 100%;
+  margin-bottom: 72px;
+  margin-left: 0.5em;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 10;
+  width: 15%;
+  padding: 16px;
+  font-family: "Roboto Mono", monospace;
+  font-weight: lighter;
+  text-transform: uppercase;
+  letter-spacing: 0.5em;
+  text-align: center;
+}
+
+.bar {
+  margin-top: auto;
+  height: 72px;
+  width: 100%;
+  background-color: black;
+}
+
+@media screen and (max-width: 1024px) {
+  .archImage {
+    display: none;
+  }
+}
