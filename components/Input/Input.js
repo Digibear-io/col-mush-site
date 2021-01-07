@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./Input.module.css";
+import { setInputHeight, settingsStore } from "../../store";
 
-export default function Input({ socket }) {
+export default function Input({ socket, width }) {
   const input = useRef();
   const idx = useRef(-1);
   const [history, setHistory] = useState([]);
@@ -13,8 +14,12 @@ export default function Input({ socket }) {
   return (
     <div
       ref={input}
+      id="input"
       className={styles.container}
       contentEditable
+      style={{
+        width,
+      }}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -49,6 +54,8 @@ export default function Input({ socket }) {
             input.current.innerText = history[idx.current++];
           }
         }
+
+        settingsStore.dispatch(setInputHeight(input.current.clientHeight));
       }}
     ></div>
   );

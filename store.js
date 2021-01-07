@@ -11,6 +11,35 @@ const menuSlice = createSlice({
 export const { toggle } = menuSlice.actions;
 export const menuStore = configureStore({ reducer: menuSlice.reducer });
 
+const settingsSlice = createSlice({
+  name: "settings",
+  initialState: {
+    inputHeight: 62,
+    output: null,
+    socket: null,
+  },
+  reducers: {
+    setInputHeight: (state, action) => ({
+      ...state,
+      ...{ input: action.payload },
+    }),
+  },
+});
+
+export const { setInputHeight } = settingsSlice.actions;
+export const settingsStore = configureStore({ reducer: settingsSlice.reducer });
+
+const historySlice = createSlice({
+  name: "history",
+  initialState: [],
+  reducers: {
+    setHistory: (state, action) => [...state, action.payload],
+  },
+});
+
+export const { setHistory } = historySlice.actions;
+export const historyStore = configureStore({ reducer: menuSlice.reducer });
+
 const charState = {
   name: "",
   look: "",

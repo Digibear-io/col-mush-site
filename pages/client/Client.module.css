@@ -4,24 +4,36 @@
 }
 
 .container {
-  max-width: 1200px;
-
-  height: calc(100vh);
+  max-width: 1400px;
+  height: 100vh;
   display: flex;
   margin: 0 auto;
   padding-top: 72px;
+}
+
+.left {
+  width: 25%;
+}
+
+.center {
+  display: flex;
   flex-direction: column;
+
+  width: 50%;
+}
+
+.right {
+  width: 25%;
 }
 
 .output {
-  padding: 16px;
-  margin: 16px 0;
   line-height: normal;
   overflow-y: overlay;
+  overflow-x: hidden;
   margin-top: auto;
   width: 100%;
+  max-height: 100vh;
   white-space: pre-wrap;
-  word-break: break-all;
   font-weight: lighter;
   font-family: "Roboto Mono", monospace;
 }
@@ -33,4 +45,69 @@
 .anchor {
   overflow-anchor: auto;
   height: 1px;
+}
+
+.descContainter {
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+}
+
+.descContainer img {
+  width: 100%;
+  min-height: 400px;
+  max-height: calc(100vh - 144px);
+  flex-grow: 1;
+  object-fit: cover;
+  object-position: center;
+  padding-bottom: 16px;
+}
+
+.descContainer p {
+  font-family: "Roboto", serif;
+  line-height: normal;
+  padding-bottom: 16px;
+}
+
+.avatarContainer {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: grey;
+  border-radius: 100%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-right: 16px;
+}
+
+.sayContainer {
+  display: flex;
+  margin: 16px 0;
+}
+
+.sayName {
+  font-family: "Roboto Mono", monospace;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@media screen and (max-width: 1024px) {
+  .left {
+    display: none;
+  }
+
+  .right {
+    display: none;
+  }
+
+  .output {
+    padding: 0 16px;
+    margin-bottom: unset;
+  }
+
+  .center {
+    width: 100%;
+  }
 }

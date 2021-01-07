@@ -3,11 +3,25 @@ import styles from "./Chargen.module.css";
 import ArcImage from "../../components/ArcImage/ArcImage";
 import ChargenTemplate from "../../components/ChargenTemplate/ChargenTemplate";
 import Button from "../../components/Button/Button";
+import { useRouter } from "next/router";
 
 export default function Questions({ data, qdata }) {
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
   const [questions, setQuestions] = useState([]);
+  const [state, setState] = useState({});
+  const router = useRouter();
+
+  const handleContinue = () => {
+    const array = [];
+    document.querySelectorAll("textarea").forEach((area) => {
+      array.push({ _id: area.id, text: area.value || "" });
+    });
+    const state = JSON.parse(window.localStorage.getItem("state"));
+    state.questions = array;
+    window.localStorage.setItem("state", JSON.stringify(state));
+    router.push("/chargen/gear");
+  };
 
   useEffect(() => {
     const storage = window.localStorage.getItem("state");
@@ -16,11 +30,13 @@ export default function Questions({ data, qdata }) {
     setTitle(data[store.faction].archetypes[store.archetype].Name);
     setImage(data[store.faction].archetypes[store.archetype].image[0].url);
     setQuestions(data[store.faction].archetypes[store.archetype].Questions);
+    setState(store);
   }, []);
 
   return (
     <>
       <ChargenTemplate
+        title="City of Lights MUSH: Questions"
         left={
           <>
             <h3
@@ -45,7 +61,14 @@ export default function Questions({ data, qdata }) {
             {group.Question.map((qs) => (
               <div>
                 <h4 style={{ padding: "0 16px 16px 0" }}>{qs.text}</h4>
-                <textarea id={qs._id} spellCheck={true} />
+                <textarea id={qs._id} spellCheck={true}>
+                  {
+                    state.questions.find((question) => {
+                      console.log(question, qs._id);
+                      return question._id === qs._id;
+                    }).text
+                  }
+                </textarea>
               </div>
             ))}
           </div>
@@ -54,8 +77,14 @@ export default function Questions({ data, qdata }) {
           className={styles.buttonContainer}
           style={{ margin: "0 0 24px 0" }}
         >
-          <Button>Back</Button>
-          <Button>Continue</Button>
+          <Button
+            onClick={() => {
+              router.push("/chargen");
+            }}
+          >
+            Back
+          </Button>
+          <Button onClick={handleContinue}>Continue</Button>
         </div>
       </ChargenTemplate>
       <ArcImage src={image} title={title} />

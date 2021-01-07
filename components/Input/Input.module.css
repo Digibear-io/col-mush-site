@@ -1,22 +1,27 @@
 .container {
   background-color: #373737;
   margin: 0 auto;
-
+  display: flex;
+  word-wrap: break-word;
+  max-width: 1400px;
+  padding: 16px;
+  min-height: 64px;
   margin-bottom: 24px;
-  max-width: 1200px;
-  padding: 8px 16px;
-  min-height: 48px;
-  max-height: 500px;
-  overflow-y: overlay;
+  overflow-y: auto;
   outline: none;
   border: 1px #505050 solid;
-  width: 100%;
+
   font-family: "Roboto Mono", monospace;
   font-weight: lighter;
+  position: relative;
+  width: 100%;
+  bottom: 0;
+  position: fixed;
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1024px) {
   .container {
     margin-bottom: 0px;
+    width: 100%;
   }
 }
