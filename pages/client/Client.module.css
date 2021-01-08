@@ -4,7 +4,7 @@
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1200px;
   height: 100vh;
   display: flex;
   margin: 0 auto;
@@ -12,21 +12,22 @@
 }
 
 .left {
-  width: 25%;
+  width: 20%;
 }
 
 .center {
   display: flex;
   flex-direction: column;
 
-  width: 50%;
+  width: 65%;
 }
 
 .right {
-  width: 25%;
+  width: 20%;
 }
 
 .output {
+  padding: 0 16px;
   line-height: normal;
   overflow-y: overlay;
   overflow-x: hidden;
@@ -89,8 +90,37 @@
 
 .sayName {
   font-family: "Roboto Mono", monospace;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.6);
+}
+
+.listContaner {
+  margin: 0 16px;
+}
+
+.listTitle {
+  font-family: "Roboto Mono", monospace;
+  font-style: normal;
+  border-bottom: 1px solid white;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 32px;
+  letter-spacing: 0.2em;
+  text-transform: capitalize;
+  margin-bottom: 8px;
+
+  color: #ffffff;
+}
+
+.listEntry {
+  font-family: "Roboto", serif;
+  font-style: normal;
+  font-weight: lighter;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0.2em;
+  text-transform: capitalize;
+  color: #ffffff;
 }
 
 @media screen and (max-width: 1024px) {

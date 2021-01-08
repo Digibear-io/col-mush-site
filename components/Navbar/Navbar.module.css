@@ -15,7 +15,7 @@
   padding: 0px 16px;
   display: flex;
   align-items: center;
-  max-width: 1400px;
+  max-width: 1200px;
   z-index: 100;
 }
 
@@ -30,7 +30,7 @@
 }
 
 .menuContainer {
-  max-width: 1400px;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   padding: 0 16px;

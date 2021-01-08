@@ -8,7 +8,7 @@ const Desc = ({ ic, image, name, location, description }) => {
     <div className={styles.descContainer}>
       <img src={image} />
       <h2>{name}</h2>
-      <h4>{`${location}, ${ic ? "IC" : "OOC"}`}</h4>
+      <h4>{`${location},${ic ? "IC" : "OOC"}`}</h4>
       <p>{description}</p>
     </div>
   );
@@ -37,7 +37,27 @@ const Say = ({ data }) => {
   );
 };
 
-const Login = () => {
+const List = ({ title, list }) => {
+  return (
+    <div
+      className={styles.listContaner}
+      style={{ display: list.length > 0 ? "block" : "none" }}
+    >
+      <p className={styles.listTitle}>{title}</p>
+      {list.map((item) => {
+        return <p className={styles.listEntry}>{item}</p>;
+      })}
+    </div>
+  );
+};
+
+const Login = ({ funs }) => {
+  const { setCharacters } = funs;
+
+  useEffect(() => {
+    setCharacters([]);
+  }, []);
+
   return (
     <div>
       <p style={{ color: "rgba(255,255,255,.7)", marginTop: "50px" }}>
@@ -78,6 +98,7 @@ export default function Client() {
   const [winWidth, setWinWidth] = useState(500);
   const [outWidth, setOutWidth] = useState(0);
   const [scrolled, setScrolled] = useState(false);
+  const [characters, setCharacters] = useState([]);
   const output = useRef();
   const anchor = useRef();
 
@@ -102,10 +123,16 @@ export default function Client() {
 
     sock.addEventListener("message", (e) => {
       try {
-        const data = JSON.parse(convert.toHtml(e.data));
+        const data = JSON.parse(
+          convert
+            .toHtml(e.data.replace(/\u001b\[0m$/, ""))
+            .replace(/style="([^"]+)"/g, "style='$1'")
+        );
         if (data.cmd === "token") {
           setToken(data.token);
           window.sessionStorage.setItem("token", data.token);
+        } else if (data.cmd === "characters") {
+          setCharacters(data.payload);
         } else {
           setHistory((v) => [...v, data]);
         }
@@ -138,7 +165,9 @@ export default function Client() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
-        <div className={styles.left}></div>
+        <div className={styles.left}>
+          <List title="Characters" list={characters} />
+        </div>
         <div className={styles.center}>
           <div
             style={{
@@ -151,7 +180,7 @@ export default function Client() {
             id="output"
             ref={output}
           >
-            {history.map((data) => {
+            {history.map((data, idx) => {
               if (data.cmd === "desc" && token === data.token) {
                 return (
                   <Desc
@@ -159,6 +188,7 @@ export default function Client() {
                     name={data.name || ""}
                     location={data.location || ""}
                     description={data.description}
+                    key={idx}
                   />
                 );
               }
@@ -166,16 +196,19 @@ export default function Client() {
               // If it's a text request.
               if (data.cmd === "text" && token === data.token) {
                 return (
-                  <div dangerouslySetInnerHTML={{ __html: data.text }}></div>
+                  <div
+                    dangerouslySetInnerHTML={{ __html: data.text }}
+                    key={idx}
+                  ></div>
                 );
               }
 
               if (data.cmd === "say" && token == data.token) {
-                return <Say data={data} />;
+                return <Say data={data} key={idx} />;
               }
 
               if (data.cmd === "login") {
-                return <Login />;
+                return <Login key={idx} funs={{ setCharacters }} />;
               }
             })}
             <div className={styles.anchor} ref={anchor} />
