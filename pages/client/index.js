@@ -203,10 +203,7 @@ export default function Client() {
             <div
               className={styles.contentsMobile}
               style={{
-                marginBottom:
-                  inWidth >= winWidth
-                    ? `calc(${inHeight}px + 36px)`
-                    : `calc(${inHeight}px)`,
+                marginBottom: `calc(${inHeight}px)`,
                 display: mobileContents ? "flex" : "none",
               }}
               hidden={mobileContents}
