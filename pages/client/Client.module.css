@@ -18,7 +18,6 @@
 .center {
   display: flex;
   flex-direction: column;
-
   width: 65%;
 }
 
@@ -64,10 +63,19 @@
   padding-bottom: 16px;
 }
 
+.descDesc {
+  padding: 16px 0;
+  font-family: "Roboto Mono", monospace;
+}
+
 .descContainer p {
   font-family: "Roboto", serif;
-  line-height: normal;
+  line-height: 24px;
   padding-bottom: 16px;
+}
+
+.descContainer h4 {
+  margin-top: 4px;
 }
 
 .avatarContainer {
@@ -90,8 +98,13 @@
 
 .sayName {
   font-family: "Roboto Mono", monospace;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.1em;
   color: rgba(255, 255, 255, 0.6);
+}
+
+.sayMessage {
+  font-family: "Roboto", serif;
+  line-height: 24px;
 }
 
 .listContaner {
@@ -108,7 +121,6 @@
   letter-spacing: 0.2em;
   text-transform: capitalize;
   margin-bottom: 8px;
-
   color: #ffffff;
 }
 
@@ -117,10 +129,35 @@
   font-style: normal;
   font-weight: lighter;
   font-size: 14px;
+  padding-bottom: 8px;
   line-height: 24px;
   letter-spacing: 0.2em;
   text-transform: capitalize;
   color: #ffffff;
+}
+
+.contentsMobile {
+  background: rgb(14, 13, 13);
+  border: 1px solid rgb(53, 53, 53);
+  position: fixed;
+  flex-direction: column;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60vh;
+  padding-top: 32px;
+  overflow-y: overlay;
+}
+
+.contentsMobile img {
+  margin-left: auto;
+  margin-right: 16px;
+  margin-bottom: 16px;
+}
+
+.contentsMobile p {
+  font-size: 16px;
+  line-height: 32px;
 }
 
 @media screen and (max-width: 1024px) {

@@ -1,26 +1,43 @@
-.container {
+.wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 64px;
   background-color: #373737;
+  position: fixed;
+  bottom: 0;
+  border: 1px #505050 solid;
   margin: 0 auto;
+  margin-bottom: 24px;
+}
+
+.container {
   display: flex;
   word-wrap: break-word;
   max-width: 1400px;
   padding: 16px;
   min-height: 64px;
-  margin-bottom: 24px;
   overflow-y: auto;
   outline: none;
-  border: 1px #505050 solid;
 
   font-family: "Roboto Mono", monospace;
   font-weight: lighter;
   position: relative;
   width: 100%;
-  bottom: 0;
-  position: fixed;
+}
+
+.contentsButton {
+  height: 32px;
+  width: 32px;
+  fill: white;
+  margin-left: 16px;
+
+  margin-bottom: 16px;
+  margin-top: auto;
 }
 
 @media screen and (max-width: 1024px) {
-  .container {
+  .wrapper {
     margin-bottom: 0px;
     width: 100%;
   }

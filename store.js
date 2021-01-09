@@ -11,6 +11,23 @@ const menuSlice = createSlice({
 export const { toggle } = menuSlice.actions;
 export const menuStore = configureStore({ reducer: menuSlice.reducer });
 
+const mobileMenuSlice = createSlice({
+  name: "Mobile Menu",
+  initialState: false,
+  reducers: {
+    mobileMenuToggle: (state) => !state,
+    mobileMenuTrue: () => true,
+    mobileMenuFalse: () => false,
+  },
+});
+
+export const {
+  mobileMenuToggle,
+  mobileMenuFalse,
+  mobileMenuTrue,
+} = mobileMenuSlice.actions;
+export const mobileStore = configureStore({ reducer: mobileMenuSlice.reducer });
+
 const settingsSlice = createSlice({
   name: "settings",
   initialState: {
