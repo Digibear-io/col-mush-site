@@ -11,6 +11,7 @@ const menuSlice = createSlice({
 export const { toggle } = menuSlice.actions;
 export const menuStore = configureStore({ reducer: menuSlice.reducer });
 
+// Storage slice for displaying the mobile contents menu
 const mobileMenuSlice = createSlice({
   name: "Mobile Menu",
   initialState: false,
@@ -28,22 +29,66 @@ export const {
 } = mobileMenuSlice.actions;
 export const mobileStore = configureStore({ reducer: mobileMenuSlice.reducer });
 
+// settings store.
 const settingsSlice = createSlice({
   name: "settings",
   initialState: {
     inputHeight: 62,
-    output: null,
-    socket: null,
+    loggedIn: false,
+    connected: false,
+    name: "",
+    password: "",
+    characters: [],
+    things: [],
+    exits: [],
+    token: "",
   },
   reducers: {
     setInputHeight: (state, action) => ({
       ...state,
       ...{ input: action.payload },
     }),
+    setName: (state, action) => ({
+      ...state,
+      ...{ name: action.payload },
+    }),
+    setPassword: (state, action) => ({
+      ...state,
+      ...{ password: action.payload },
+    }),
+    setCharacters: (state, action) => ({
+      ...state,
+      ...{ characters: action.payload },
+    }),
+    setThings: (state, action) => ({ ...state, ...{ things: action.payload } }),
+    setExits: (state, action) => ({ ...state, ...{ exits: action.payload } }),
+    setToken: (state, action) => {
+      console.log(action.payload);
+      return { ...state, ...{ token: action.payload } };
+    },
+    setLoggedIn: (state, action) => ({
+      ...state,
+      ...{ loggedIn: action.payload },
+    }),
+    setConnected: (state, action) => ({
+      ...state,
+      ...{ connected: action.payload },
+    }),
   },
 });
 
-export const { setInputHeight } = settingsSlice.actions;
+export const {
+  setInputHeight,
+  toggleLogin,
+  setPassword,
+  setName,
+  setCharacters,
+  setThings,
+  setExits,
+  setToken,
+  setLoggedIn,
+  setConnected,
+} = settingsSlice.actions;
 export const settingsStore = configureStore({ reducer: settingsSlice.reducer });
 
 const historySlice = createSlice({
@@ -55,7 +100,7 @@ const historySlice = createSlice({
 });
 
 export const { setHistory } = historySlice.actions;
-export const historyStore = configureStore({ reducer: menuSlice.reducer });
+export const historyStore = configureStore({ reducer: historySlice.reducer });
 
 const charState = {
   name: "",

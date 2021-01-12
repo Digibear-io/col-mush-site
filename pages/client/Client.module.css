@@ -66,12 +66,13 @@
 .descDesc {
   padding: 16px 0;
   font-family: "Roboto Mono", monospace;
+  font-size: 1rem;
 }
 
 .descContainer p {
   font-family: "Roboto", serif;
   line-height: 24px;
-  padding-bottom: 16px;
+  padding-bottom: 1rem;
 }
 
 .descContainer h4 {
@@ -103,7 +104,8 @@
 }
 
 .sayMessage {
-  font-family: "Roboto", serif;
+  font-family: "Roboto Mono", serif;
+  font-size: 1rem;
   line-height: 24px;
 }
 

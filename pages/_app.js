@@ -1,13 +1,16 @@
 import "../styles/globals.css";
 import Layout from "../components/Layout/Layout";
+import SocketProvider from "../components/socketStore";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <div>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </div>
+    <SocketProvider>
+      <div>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </div>
+    </SocketProvider>
   );
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import styles from "./Input.module.css";
 import {
   mobileMenuToggle,
@@ -6,12 +6,14 @@ import {
   setInputHeight,
   settingsStore,
 } from "../../store";
+import { SocketContext } from "../socketStore";
 
-export default function Input({ socket, width, hidden }) {
+export default function Input({ width, hidden }) {
   const input = useRef();
   const idx = useRef(-1);
   const [history, setHistory] = useState([]);
   const [toggle, setToggle] = useState(mobileStore.getState());
+  const { socket } = useContext(SocketContext);
 
   useEffect(() => {
     input.current.focus();

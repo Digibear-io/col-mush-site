@@ -16,9 +16,11 @@
     "postcss-loader": "^4.1.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-skeleton-loader": "^1.0.4",
     "react-spinners": "^0.9.0",
     "remark": "^13.0.0",
     "remark-html": "^13.0.1",
+    "shortid": "^2.2.16",
     "strip-ansi": "^6.0.0"
   }
 }

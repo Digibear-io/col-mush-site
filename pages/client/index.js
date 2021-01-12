@@ -2,7 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import Input from "../../components/Input/Input";
 import styles from "./Client.module.css";
 import Ansi from "ansi-to-html";
-import { mobileStore, mobileMenuToggle, mobileMenuFalse } from "../../store";
+import Login from "../../components/Login/Login";
+import {
+  mobileStore,
+  mobileMenuToggle,
+  mobileMenuFalse,
+  settingsStore,
+  historyStore,
+} from "../../store";
 
 const List = ({ title, list }) => {
   return (
@@ -58,48 +65,9 @@ const Say = ({ data }) => {
   );
 };
 
-const Login = ({ funs }) => {
-  const { setCharacters } = funs;
-
-  useEffect(() => {
-    setCharacters([]);
-  }, []);
-
-  return (
-    <div>
-      <p style={{ color: "rgba(255,255,255,.7)", marginTop: "50px" }}>
-        Welcome to
-      </p>
-      <h2>The City of Lights MUSH</h2>
-      <img
-        src="https://i.imgur.com/KB4wxBW.png"
-        style={{
-          objectFit: "cover",
-          height: "50vh",
-          width: "100%",
-          padding: "16px 0",
-
-          flexGrow: 1,
-        }}
-      />
-      <p style={{ marginBottom: "8px", fontWeight: "bold" }}>
-        {"The Following Commands are available:"}
-      </p>
-
-      <ul style={{ marginLeft: "16px", marginBottom: "24px" }}>
-        <li>{"Create  <name> <password>"}</li>
-        <li>{"Connect <name> <password>"}</li>
-        <li>{"WHO"}</li>
-        <li>{"QUIT"}</li>
-      </ul>
-    </div>
-  );
-};
-
 export default function Client() {
-  const [socket, setSocket] = useState();
-  const [history, setHistory] = useState([]);
-  const [token, setToken] = useState("");
+  const [history, setHist] = useState(historyStore.getState());
+  const [token, setToken] = useState(settingsStore.getState().token);
   const [inHeight, setInHeight] = useState(62);
   const [inWidth, setinWidth] = useState(0);
   const [winWidth, setWinWidth] = useState(500);
@@ -125,47 +93,6 @@ export default function Client() {
   }, [winWidth]);
 
   useEffect(() => {
-    const sock = new WebSocket("ws://lights.digibear.io:2861");
-    setSocket(sock);
-    window.sessionStorage.removeItem("token");
-    const convert = new Ansi({ newline: true });
-    const textConv = new Ansi({ newline: true, escapeXML: true });
-    sock.addEventListener("open", () => {
-      sock.send("json");
-      sock.send("showlogin");
-    });
-
-    sock.addEventListener("message", (e) => {
-      try {
-        const data = JSON.parse(
-          convert
-            .toHtml(e.data.replace(/\u001b\[0m$/, ""))
-            .replace(/style="([^"]+)"/g, "style='$1'")
-        );
-        if (data.cmd === "token") {
-          setToken(data.token);
-          window.sessionStorage.setItem("token", data.token);
-        } else if (data.cmd === "objects") {
-          setCharacters(data.characters);
-          setThings(data.things);
-          setExits(data.exits);
-        } else {
-          setHistory((v) => [...v, data]);
-        }
-      } catch {
-        const str = e.data.toString();
-        let text = textConv.toHtml(str.replace(/\r\n$/, ""));
-        if (text.length > 0) {
-          const txt = {
-            cmd: "text",
-            text,
-            token: window.sessionStorage.getItem("token"),
-          };
-          setHistory((v) => [...v, txt]);
-        }
-      }
-    });
-
     const input = document.getElementById("input");
 
     window.addEventListener("resize", (ev) => {
@@ -177,6 +104,10 @@ export default function Client() {
       setInHeight(ev.target.offsetHeight + ev.target.style.marginBottom);
     });
 
+    settingsStore.subscribe(() => {
+      setToken(settingsStore.getState().token);
+    });
+    historyStore.subscribe(() => setHist(historyStore.getState()));
     mobileStore.subscribe(() => setMobileContents(mobileStore.getState()));
   }, []);
 
@@ -192,7 +123,7 @@ export default function Client() {
           <div
             style={{
               marginBottom:
-                inWidth <= winWidth
+                winWidth >= 1024
                   ? `calc(${inHeight}px + 36px)`
                   : `calc(${inHeight}px + 16px)`,
             }}
@@ -229,7 +160,6 @@ export default function Client() {
                   />
                 );
               }
-
               // If it's a text request.
               if (data.cmd === "text" && token === data.token) {
                 return (
@@ -243,21 +173,14 @@ export default function Client() {
               if (data.cmd === "say" && token == data.token) {
                 return <Say data={data} key={idx} />;
               }
-
-              if (data.cmd === "login") {
-                return <Login key={idx} funs={{ setCharacters }} />;
-              }
             })}
             <div className={styles.anchor} ref={anchor} />
           </div>
-          <Input
-            socket={socket}
-            width={outWidth}
-            hidden={winWidth <= 1024 ? false : true}
-          />
+          <Input width={outWidth} hidden={winWidth <= 1024 ? false : true} />
         </div>
         <div className={styles.right}></div>
       </div>
+      <Login />
     </div>
   );
 }

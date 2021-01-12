@@ -1,22 +1,51 @@
 .inputContainer {
   display: flex;
   color: white;
-  font-family: "Roboto Mono", monospace;
+  align-items: center;
 }
 
 .input {
-  flex-grow: 1;
+  font-family: "Roboto Mono", monospace;
+  font-weight: lighter;
+  height: 100%;
+  width: 100%;
   font-weight: lighter;
   outline: none;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  flex-grow: 1;
+  color: white;
 }
 
-.input[contenteditable][placeholder]:empty:before {
-  content: attr(placeholder);
+.input::placeholder {
+  color: white;
 }
 
 .label {
+  display: flex;
+  align-items: center;
   font-size: 18px;
   margin-right: 16px;
+  text-align: center;
+}
+
+.inputPassword {
+  font-family: "Roboto Mono", monospace;
+  font-weight: lighter;
+  appearance: none;
+  border: none;
+  background: transparent;
+
+  font-size: 18px;
+  outline: none;
+  color: white;
+  flex-grow: 1;
+  max-width: 100%;
+}
+
+.inputPassword::placeholder {
+  color: white;
 }
 
 .label::after {
