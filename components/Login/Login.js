@@ -18,9 +18,10 @@ function Login() {
   }, []);
 
   const handleConnect = () => {
+    console.log("connecting!");
     connect({
       address: "ws://lights.digibear.io:2861",
-      init: (socket) => {
+      initi: (socket) => {
         settingsStore.dispatch(setName(name));
         settingsStore.dispatch(setPassword(password));
         setTimeout(() => {
