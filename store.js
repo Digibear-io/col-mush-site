@@ -62,10 +62,7 @@ const settingsSlice = createSlice({
     }),
     setThings: (state, action) => ({ ...state, ...{ things: action.payload } }),
     setExits: (state, action) => ({ ...state, ...{ exits: action.payload } }),
-    setToken: (state, action) => {
-      console.log(action.payload);
-      return { ...state, ...{ token: action.payload } };
-    },
+    setToken: (state, action) => ({ ...state, ...{ token: action.payload } }),
     setLoggedIn: (state, action) => ({
       ...state,
       ...{ loggedIn: action.payload },
@@ -89,7 +86,10 @@ export const {
   setLoggedIn,
   setConnected,
 } = settingsSlice.actions;
-export const settingsStore = configureStore({ reducer: settingsSlice.reducer });
+export const settingsStore = configureStore({
+  reducer: settingsSlice.reducer,
+  devTools: process.env.NODE_ENV !== "production",
+});
 
 const historySlice = createSlice({
   name: "history",

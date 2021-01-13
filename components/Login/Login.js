@@ -26,7 +26,7 @@ function Login() {
         setTimeout(() => {
           socket.send(`connect ${name} ${password}`);
           socket.send(`@token ${generate()}`);
-        }, 1500);
+        }, 2000);
       },
     });
   };
