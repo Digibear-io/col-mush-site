@@ -23,7 +23,7 @@ function Navbar() {
           onClick={() => menuStore.dispatch(toggle())}
         />
       </div>
-      <Reconnect />
+      
     </nav>
   );
 }
