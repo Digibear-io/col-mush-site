@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { settingsStore, toggleLogin, setPassword, setName } from "../../store";
+import { settingsStore, setPassword, setName } from "../../store";
 import styles from "./Login.module.css";
 import InputField from "../InputField/index";
 import Button from "../Button/Button";
@@ -18,16 +18,30 @@ function Login() {
   }, []);
 
   const handleConnect = () => {
+    connect({
+      address: "ws://lights.digibear.io:2861",
+      handlers:{
+        connect: (socket) => {
+          settingsStore.dispatch(setName(name));
+          settingsStore.dispatch(setPassword(password));
+          socket.send(`connect ${name} ${password}`);
+        },
+        login: (socket) => socket.send(`@token ${generate()}`)
+      },
+    });
+  };
+
+  const handleCreate = () => {
     console.log("connecting!");
     connect({
       address: "ws://lights.digibear.io:2861",
-      initi: (socket) => {
-        settingsStore.dispatch(setName(name));
-        settingsStore.dispatch(setPassword(password));
-        setTimeout(() => {
+      handlers:{
+        connect: (socket) => {
+          settingsStore.dispatch(setName(name));
+          settingsStore.dispatch(setPassword(password));
           socket.send(`connect ${name} ${password}`);
-          socket.send(`@token ${generate()}`);
-        }, 2000);
+        },
+        login: (socket) => socket.send(`@token ${generate()}`)
       },
     });
   };
@@ -37,6 +51,8 @@ function Login() {
       className={styles.wrapper}
       style={{ display: login ? "none" : "flex" }}
     >
+      <div className={styles.container}>
+
       <p className={styles.subheader}>Welcome to</p>
       <h2 className={styles.header}>The City of Lights MUSH</h2>
       <img src="https://i.imgur.com/KB4wxBW.png" />
@@ -48,11 +64,18 @@ function Login() {
         <InputField
           placeholder="Password"
           onChange={(e) => setPass(e.target.value)}
+            password
+            onKeyDown={e => {
+              if(e.key === "Enter") handleConnect()
+            }}
         />
       </div>
       <div className={styles.buttonContainer}>
         <Button onClick={handleConnect}>Connect</Button>
-        <Button outline>Create</Button>
+        <Button outline onClick={handleCreate}>
+          Register
+        </Button>
+      </div>
       </div>
     </div>
   );

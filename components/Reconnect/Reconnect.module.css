@@ -1,0 +1,23 @@
+.container {
+  font-family: "Roboto Mono", monospace;
+  font-size: 14px;
+  font-weight: bold;
+  background: #acb000;
+  padding: 8px;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.container p {
+  color: #5e5f01;
+}
+
+.container button {
+  font-family: "Roboto Mono", monospace;
+  margin-left: auto;
+  padding: 4px;
+  background: transparent;
+  border: 1px solid #5e5f01;
+}

@@ -1,24 +1,22 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import styles from "./Input.module.css";
 import {
-  mobileMenuToggle,
-  mobileStore,
+  notificationStore,
   setInputHeight,
   settingsStore,
+  setReconnect,
 } from "../../store";
 import { SocketContext } from "../socketStore";
 
-export default function Input({ width, hidden }) {
+export default function Input({ width }) {
   const input = useRef();
   const idx = useRef(-1);
   const [history, setHistory] = useState([]);
-  const [toggle, setToggle] = useState(mobileStore.getState());
   const { socket } = useContext(SocketContext);
 
   useEffect(() => {
     input.current.focus();
-    mobileStore.subscribe(() => setToggle(mobileStore.getState()));
-  }, []);
+  });
 
   return (
     <div
@@ -28,13 +26,6 @@ export default function Input({ width, hidden }) {
         width,
       }}
     >
-      <img
-        src="/person_search-white-18dp.svg"
-        className={styles.contentsButton}
-        hidden={hidden}
-        style={{ opacity: toggle ? 0.2 : 0.4 }}
-        onClick={() => mobileStore.dispatch(mobileMenuToggle())}
-      />
       <div
         ref={input}
         className={styles.container}
@@ -48,9 +39,9 @@ export default function Input({ width, hidden }) {
               idx.current += 1;
 
               input.current.innerText = "";
-            } catch {
-              socket.connect("ws://lights.digibear.io:2861");
-              input.current.innerText = "";
+            } catch (error) {
+              console.log(error.message)
+              notificationStore.dispatch(setReconnect(true));
             }
           }
 

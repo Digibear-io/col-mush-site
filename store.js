@@ -151,3 +151,24 @@ const charSlice = createSlice({
 
 export const { load, set } = charSlice.actions;
 export const charStore = configureStore({ reducer: charSlice.reducer });
+
+// Noti
+const notificationSlice = createSlice({
+  name: "notifications",
+  initialState: {
+    banners: [],
+    notices: [],
+    reconnect: true
+  },
+  reducers: {
+    setBanners: (state, action) => [...state.banners, action.payload],
+    setNotices: (state, action) => [...state.notices, action.payload],
+    setReconnect: (state, action) => ({
+      ...state,
+      ...{ reconnect: action.payload },
+    })
+  },
+});
+
+export const { setBanners, setNotices, setReconnect } = notificationSlice.actions;
+export const notificationStore = configureStore({ reducer: notificationSlice.reducer });

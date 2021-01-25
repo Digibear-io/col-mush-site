@@ -10,6 +10,8 @@ import {
   setConnected,
   setLoggedIn,
   setToken,
+  notificationStore,
+  setReconnect,
 } from "../store";
 import { SocketContext } from "../components/socketStore";
 
@@ -19,12 +21,11 @@ export default function useWebsocket() {
   const [login, setLogIn] = useState(settingsStore.getState().loggedIn);
   const { setSocket } = useContext(SocketContext);
   const sock = useRef();
-  const init = useRef();
+  const handle = useRef();
 
-  const handleOpen = () => {
-    console.log("init!!!");
-    init.current(sock.current);
-  };
+  const handleOpen = () => notificationStore.dispatch(setReconnect(true));
+  const handleClose = () => notificationStore.dispatch(setReconnect(false));
+
 
   const handleMessage = (e) => {
     const convert = new Ansi({ newline: true });
@@ -66,16 +67,22 @@ export default function useWebsocket() {
       // at the login screen, handle it here.
       switch (true) {
         case text.startsWith("Either that player") && !login:
-          console.log("bad login!");
+          if (handle.current && typeof handle.current.error === 'function') {
+            handle.current.error(new Error('Bad Login'));
+          }
           break;
         case text.startsWith("Last connect was from") && !login:
-          console.log("logged in!");
+          if (handle.current && typeof handle.current.login === 'function') {
+            handle.current.login(sock.current);
+          }
           settingsStore.dispatch(setLoggedIn(true));
           break;
         case text.match(/.*Welcome.*/) && !login:
-          console.log("connected!");
+          if (handle.current && typeof handle.current.connect === 'function') {
+            handle.current.connect(sock.current);
+          }
+          notificationStore.dispatch(setReconnect(false));
           settingsStore.dispatch(setConnected(true));
-
           break;
         default:
           console.log(token);
@@ -99,22 +106,21 @@ export default function useWebsocket() {
   }, []);
 
   useEffect(() => {
-    if (!sock.current && !init.current) return;
-
+    if (!sock.current && !handle.current) return;
     // add eventlistener for messages.
     sock.current.addEventListener("message", handleMessage);
-    return () => sock.current.removeEventListener("message", handleMessage);
+    sock.current.addEventListener("open", handleOpen);
+    sock.current.addEventListener("close", handleClose);
+
+    return () => {
+      sock.current.removeEventListener("message", handleMessage);
+      sock.current.removeEventListener("open", handleOpen);
+      sock.current.removeEventListener("message", handleMessage);
+    };
   }, [sock.current, login, token]);
 
-  useEffect(() => {
-    if (!init.current) return;
-
-    sock.current.addEventListener("open", handleOpen, { once: true });
-    return () => sock.current.removeEventListener("open", handleOpen);
-  }, [connected, init.current]);
-
-  const connect = ({ address, initi = undefined }) => {
-    init.current = initi;
+  const connect = ({ address, handlers = undefined }) => {
+    handle.current = handlers;
     sock.current = new WebSocket(address);
     setSocket(sock.current);
   };

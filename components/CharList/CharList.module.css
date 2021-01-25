@@ -1,0 +1,44 @@
+.listWrapper {
+  display: flex;
+  font-size: 14px;
+  font-family: "Roboto Mono", monospace;
+  padding: 0 16px 0 0;
+  overflow-y: overlay;
+}
+
+.listContainer {
+  margin-bottom: 16px;
+}
+
+.listSingleContainer {
+  margin-bottom: 32px;
+}
+
+.listTitle {
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 16px;
+
+  letter-spacing: 0.1em;
+}
+
+.listSingleTitle {
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8px;
+
+  letter-spacing: 0.1em;
+}
+
+.listSingle p {
+  line-height: 32px;
+}
+
+.listWrapper p {
+  line-height: normal;
+}
+
+p.listIdle {
+  font-size: 14px;
+  color: rgb(168, 168, 168);
+}

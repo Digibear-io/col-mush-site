@@ -2,6 +2,7 @@ import styles from "./Navbar.module.css";
 import { menuStore, toggle } from "../../store";
 import { useState } from "react";
 import useWindowSize from "../../hooks/useWindowSize";
+import Reconnect from "../Reconnect";
 
 function Navbar() {
   const [tog, setTog] = useState(menuStore.getState());
@@ -22,24 +23,7 @@ function Navbar() {
           onClick={() => menuStore.dispatch(toggle())}
         />
       </div>
-      <div
-        className={styles.menuContainer}
-        style={{ width: size.width <= 1400 ? "100%" : " 90%" }}
-      >
-        <div className={styles.menu} hidden={!tog}>
-          <ul className={styles.links}>
-            <li>
-              <a>NEWS</a>
-            </li>
-            <li>
-              <a>HELP</a>
-            </li>
-            <li>
-              <a>THE CITY</a>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <Reconnect />
     </nav>
   );
 }

@@ -1,29 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Input from "../../components/Input/Input";
 import styles from "./Client.module.css";
 import Ansi from "ansi-to-html";
 import Login from "../../components/Login/Login";
+import Avatar from '../../components/Avatar'
+import CharList, {List} from '../../components/CharList'
 import {
   mobileStore,
-  mobileMenuToggle,
-  mobileMenuFalse,
   settingsStore,
   historyStore,
+  menuStore,
+  notificationStore,
+  toggleReconnect
 } from "../../store";
+import { SocketContext } from "../../components/socketStore";
 
-const List = ({ title, list }) => {
-  return (
-    <div
-      className={styles.listContaner}
-      style={{ display: list.length > 0 ? "block" : "none" }}
-    >
-      <p className={styles.listTitle}>{title}</p>
-      {list.map((item) => {
-        return <p className={styles.listEntry}>{item}</p>;
-      })}
-    </div>
-  );
-};
+
 
 const Desc = ({ ic, image, name, location, description, ...props }) => {
   return (
@@ -39,13 +31,6 @@ const Desc = ({ ic, image, name, location, description, ...props }) => {
   );
 };
 
-const Avatar = ({ children }) => {
-  return (
-    <div className={styles.avatarContainer}>
-      <p>{children}</p>
-    </div>
-  );
-};
 
 const Say = ({ data }) => {
   const convert = new Ansi({ newline: true });
@@ -69,61 +54,62 @@ export default function Client() {
   const [history, setHist] = useState(historyStore.getState());
   const [token, setToken] = useState(settingsStore.getState().token);
   const [inHeight, setInHeight] = useState(62);
+  const [toggle, setToggle] = useState(menuStore.getState());
   const [inWidth, setinWidth] = useState(0);
-  const [winWidth, setWinWidth] = useState(500);
+  const [winWidth, setWinWidth] = useState(0);
   const [outWidth, setOutWidth] = useState(0);
   const [scrolled, setScrolled] = useState(false);
-  const [characters, setCharacters] = useState([]);
-  const [things, setThings] = useState([]);
-  const [exits, setExits] = useState([]);
-  const [mobileContents, setMobileContents] = useState(mobileStore.getState());
+  const [characters, setChars] = useState(settingsStore.getState().characters);
+  const [things, setThing] = useState(settingsStore.getState().things);
+  const [exits, setExit] = useState(settingsStore.getState().exits);
   const output = useRef();
   const anchor = useRef();
+  const { socket } = useContext(SocketContext);
 
+  // Scroll the page down the first time there's overflow.  Normally
+  // this means the room image + desc has been called.
   useEffect(() => {
-    setOutWidth(output.current.offsetWidth);
     if (!scrolled && output.current.scrollHeight > window.innerHeight) {
       output.current.scrollTop = output.current.scrollHeight;
       setScrolled(!scrolled);
-    }
+    } 
+    
+    setOutWidth(document.getElementById("output").offsetWidth);
+    setWinWidth(window.innerWidth);
   });
-
-  useEffect(() => {
-    if (winWidth > 1024) mobileStore.dispatch(mobileMenuFalse());
-  }, [winWidth]);
-
+    
+  // Events loaded at initial render only.
   useEffect(() => {
     const input = document.getElementById("input");
-
+    
     window.addEventListener("resize", (ev) => {
       setWinWidth(ev.target.innerWidth);
+      setInHeight(input.offsetHeight + input.style.marginBottom);
       setinWidth(input.offsetWidth);
     });
 
-    input.addEventListener("keyup", (ev) => {
-      setInHeight(ev.target.offsetHeight + ev.target.style.marginBottom);
-    });
 
     settingsStore.subscribe(() => {
       setToken(settingsStore.getState().token);
+      setChars(settingsStore.getState().characters);
+      setThing(settingsStore.getState().things);
+      setExit(settingsStore.getState().exits);
     });
+    menuStore.subscribe(() => setToggle(menuStore.getState()));
     historyStore.subscribe(() => setHist(historyStore.getState()));
     mobileStore.subscribe(() => setMobileContents(mobileStore.getState()));
+
   }, []);
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
-        <div className={styles.left}>
-          <List title="Characters" list={characters} />
-          <List title="Things" list={things} />
-          <List title="Exits" list={exits} />
-        </div>
+       
         <div className={styles.center}>
           <div
             style={{
               marginBottom:
-                winWidth >= 1024
+                winWidth > 1200
                   ? `calc(${inHeight}px + 36px)`
                   : `calc(${inHeight}px + 16px)`,
             }}
@@ -135,18 +121,14 @@ export default function Client() {
               className={styles.contentsMobile}
               style={{
                 marginBottom: `calc(${inHeight}px)`,
-                display: mobileContents ? "flex" : "none",
+                display: toggle && winWidth <= 1024 ? "flex" : "none",
               }}
-              hidden={mobileContents}
             >
-              <img
-                src="/close.svg"
-                onClick={() => mobileStore.dispatch(mobileMenuToggle())}
-              />
-
-              <List title="Characters" list={characters} />
+              <CharList title="Characters" list={characters} />
               <List title="Things" list={things} />
               <List title="Exits" list={exits} />
+
+           
             </div>
             {history.map((data, idx) => {
               if (data.cmd === "desc" && token === data.token) {
@@ -176,9 +158,13 @@ export default function Client() {
             })}
             <div className={styles.anchor} ref={anchor} />
           </div>
-          <Input width={outWidth} hidden={winWidth <= 1024 ? false : true} />
+          <Input width={outWidth} hidden={winWidth < 1024 ? false : true} />
         </div>
-        <div className={styles.right}></div>
+        <div className={styles.right}>
+          <CharList title="Characters" list={characters} />
+          <List title="Things" list={things} />
+          <List title="Exits" list={exits} />
+        </div>
       </div>
       <Login />
     </div>
